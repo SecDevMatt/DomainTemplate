@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Core.Objects;
 using System.Linq;
 using DomainTemplate.Helpers;
 using DomainTemplate.Interfaces;
@@ -24,7 +23,7 @@ namespace DomainTemplate.Repositories
                 throw new InvalidOperationException($"{typeof(DbContext).FullName} context not found");
         }
 
-        public virtual IEnumerable<TEntity> GetAll() => _context.Set<TEntity>().ToList();
+        public virtual IEnumerable<TEntity> GetAll() => _context.Set<TEntity>();
 
         public virtual TEntity GetById(int id) => _context.Set<TEntity>().Find(id);
 
@@ -48,10 +47,26 @@ namespace DomainTemplate.Repositories
             _context.ApplyStateChanges();
         }
 
+        public virtual void UpdateOrInsertRange(IEnumerable<TEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                UpdateOrInsertEntity(entity);
+            }
+        }
+
         public virtual void Delete(TEntity entity)
         {
             _context.Set<TEntity>().Attach(entity);
             _context.Set<TEntity>().Remove(entity);
+        }
+
+        public virtual void DeleteRange(IEnumerable<TEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                Delete(entity);
+            }
         }
 
         public virtual void DeleteById(int id)
