@@ -11,6 +11,13 @@ namespace DomainTemplate.Helpers
         private bool _disposed;
         public ICollection<IContext> Contexts { get; private set; } = new List<IContext>();
 
+        public ModelManager() { }
+
+        public ModelManager(IContext context)
+        {
+            AddContext(context);
+        }
+
         public void AddContext(IContext context)
         {
             if (Contexts.Any(x => x.GetType() == context.GetType()))
